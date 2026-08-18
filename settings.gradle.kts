@@ -23,3 +23,5 @@ dependencyResolutionManagement {
 rootProject.name = "nine-eleven-watchface"
 include(":watchface")
 include(":energy-bridge-watch")
+
+include(":energy-bridge-companion")
