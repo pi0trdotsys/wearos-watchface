@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nine Eleven - Watch Face Format v2 document.
+
+  Design space is 480x480, the native panel of the Galaxy Watch Ultra; the
+  runtime scales it for smaller round watches.
+
+  Layout, top to bottom:
+      y  44 ..  71   date badge
+      y  74 .. 108   energy score (complication slot)
+      y 134 .. 240   car silhouette (six selectable bodies, tinted)
+      y 256 .. 291   steps | temperature | battery
+      y 304 .. 382   24-hour clock, seven-segment
+
+  Positions dodge the bezel numerals baked into bezel.png: the 10 and 50 marks
+  sit at y=137, the 20 and 40 marks at x=62 and x=417.
+
+  Two user configurations:
+      theme  ->  [CONFIGURATION.theme.0] accent   (car, badge, energy)
+                 [CONFIGURATION.theme.1] clock
+                 [CONFIGURATION.theme.2] labels
+      car    ->  which silhouette is drawn
+
+  Ambient keeps only what a dark panel can hold cheaply: a wireframe car, the
+  date badge as an outline, and the clock over a faint "88:88" segment field.
+-->
+<WatchFace width="480" height="480" clipShape="CIRCLE">
+
+    <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+    <Metadata key="PREVIEW_TIME" value="21:47:00" />
+
+    <UserConfigurations>
+        <ColorConfiguration id="theme" displayName="cfg_theme" defaultValue="lava">
+            <ColorOption id="lava"    displayName="theme_lava"    colors="#ff5a1f #ffffff #8c96a8" />
+            <ColorOption id="guards"  displayName="theme_guards"  colors="#e2211c #ffffff #8c96a8" />
+            <ColorOption id="amber"   displayName="theme_amber"   colors="#ffb000 #ffffff #8c96a8" />
+            <ColorOption id="acid"    displayName="theme_acid"    colors="#b4ff39 #ffffff #8c96a8" />
+            <ColorOption id="ice"     displayName="theme_ice"     colors="#4fd1ff #ffffff #8c96a8" />
+            <ColorOption id="magenta" displayName="theme_magenta" colors="#ff3d8b #ffffff #8c96a8" />
+            <ColorOption id="mint"    displayName="theme_mint"    colors="#2be8b0 #2be8b0 #7d8c9c" />
+            <ColorOption id="mono"    displayName="theme_mono"    colors="#e8ecf4 #ffffff #78829a" />
+        </ColorConfiguration>
+
+        <ListConfiguration id="car" displayName="cfg_car" defaultValue="rear_engine">
+            <ListOption id="rear_engine" displayName="car_rear_engine" />
+            <ListOption id="wedge"       displayName="car_wedge" />
+            <ListOption id="mid_engine"  displayName="car_mid_engine" />
+            <ListOption id="front_gt"    displayName="car_front_gt" />
+            <ListOption id="hyper"       displayName="car_hyper" />
+            <ListOption id="classic"     displayName="car_classic" />
+        </ListConfiguration>
+    </UserConfigurations>
+
+    <Scene backgroundColor="#ff000000">
+
+        <!-- ============================ background ======================= -->
+        <PartImage name="backdrop" x="0" y="0" width="480" height="480" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Image resource="backdrop" />
+        </PartImage>
+
+        <PartImage name="bezel" x="0" y="0" width="480" height="480" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Image resource="bezel" />
+        </PartImage>
+
+        <!-- =========================== date badge ======================== -->
+        <PartDraw name="badge" x="219" y="44" width="42" height="27" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <RoundRectangle x="0" y="0" width="42" height="27"
+                            cornerRadiusX="6" cornerRadiusY="6">
+                <Fill color="[CONFIGURATION.theme.0]" />
+            </RoundRectangle>
+        </PartDraw>
+
+        <PartDraw name="badge_ambient" x="219" y="44" width="42" height="27" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="180" />
+            <RoundRectangle x="1" y="1" width="40" height="25"
+                            cornerRadiusX="6" cornerRadiusY="6">
+                <Stroke color="[CONFIGURATION.theme.0]" thickness="2" />
+            </RoundRectangle>
+        </PartDraw>
+
+        <PartText name="day" x="219" y="45" width="42" height="27" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Text align="CENTER">
+                <Font family="saira_condensed_bold" size="20" color="#ff08090e">
+                    <Template><![CDATA[%d]]><Parameter expression="[DAY]" /></Template>
+                </Font>
+            </Text>
+        </PartText>
+
+        <PartText name="day_ambient" x="219" y="45" width="42" height="27" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="190" />
+            <Text align="CENTER">
+                <Font family="saira_condensed_bold" size="20"
+                      color="[CONFIGURATION.theme.0]">
+                    <Template><![CDATA[%d]]><Parameter expression="[DAY]" /></Template>
+                </Font>
+            </Text>
+        </PartText>
+
+        <!-- ======================= energy score =========================
+             Watch Face Format has no system source for Samsung Health's
+             Energy score - the health sources are steps and heart rate only -
+             so this is a complication slot the user points at Samsung Health
+             once, in the watch face editor. Every value shape it can arrive
+             in is handled, so the line reads correctly with any provider.  -->
+        <ComplicationSlot name="energy" slotId="1"
+                          x="112" y="74" width="230" height="34"
+                          displayName="slot_energy"
+                          supportedTypes="SHORT_TEXT RANGED_VALUE GOAL_PROGRESS EMPTY"
+                          alpha="255">
+            <BoundingBox x="0" y="0" width="230" height="34" />
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+
+            <Complication type="SHORT_TEXT">
+                <PartText x="0" y="6" width="116" height="22">
+                    <Text align="END">
+                        <Font family="saira_condensed_medium" size="14"
+                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                            <![CDATA[ENERGIA]]>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartText x="128" y="0" width="102" height="34">
+                    <Text align="START">
+                        <Font family="dseg7_bold" size="27"
+                              color="[CONFIGURATION.theme.0]">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="RANGED_VALUE">
+                <PartText x="0" y="6" width="116" height="22">
+                    <Text align="END">
+                        <Font family="saira_condensed_medium" size="14"
+                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                            <![CDATA[ENERGIA]]>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartText x="128" y="0" width="102" height="34">
+                    <Text align="START">
+                        <Font family="dseg7_bold" size="27"
+                              color="[CONFIGURATION.theme.0]">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="GOAL_PROGRESS">
+                <PartText x="0" y="6" width="116" height="22">
+                    <Text align="END">
+                        <Font family="saira_condensed_medium" size="14"
+                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                            <![CDATA[ENERGIA]]>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartText x="128" y="0" width="102" height="34">
+                    <Text align="START">
+                        <Font family="dseg7_bold" size="27"
+                              color="[CONFIGURATION.theme.0]">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <PartText x="0" y="6" width="116" height="22">
+                    <Text align="END">
+                        <Font family="saira_condensed_medium" size="14"
+                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                            <![CDATA[ENERGIA]]>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartText x="128" y="0" width="102" height="34">
+                    <Text align="START">
+                        <Font family="dseg7_bold" size="27" color="#ff3c4452">
+                            <![CDATA[--]]>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- ============================== car ============================
+             One flat white silhouette per body, tinted with the theme accent,
+             plus a wireframe twin that takes over in ambient.               -->
+        <ListConfiguration id="car">
+            <ListOption id="rear_engine">
+                <Group name="car_rear_engine" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_rear_engine" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_rear_engine_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="wedge">
+                <Group name="car_wedge" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_wedge" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_wedge_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="mid_engine">
+                <Group name="car_mid_engine" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_mid_engine" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_mid_engine_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="front_gt">
+                <Group name="car_front_gt" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_front_gt" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_front_gt_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="hyper">
+                <Group name="car_hyper" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_hyper" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_hyper_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="classic">
+                <Group name="car_classic" x="54" y="134" width="372" height="106">
+                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_classic" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="190" />
+                        <Image resource="car_classic_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+        </ListConfiguration>
+
+        <!-- ====================== steps | temp | battery ================= -->
+        <Group name="metrics" x="0" y="0" width="480" height="480" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+
+            <PartText name="steps_label" x="82" y="256" width="100" height="18">
+                <Text align="CENTER">
+                    <Font family="saira_condensed_medium" size="14"
+                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                        <![CDATA[KROKI]]>
+                    </Font>
+                </Text>
+            </PartText>
+            <PartText name="steps_value" x="82" y="267" width="100" height="28">
+                <Text align="CENTER">
+                    <Font family="dseg7_bold" size="22" color="#ffffffff">
+                        <Template><![CDATA[%d]]>
+                            <Parameter expression="[STEP_COUNT]" />
+                        </Template>
+                    </Font>
+                </Text>
+            </PartText>
+
+            <PartText name="temp_label" x="190" y="256" width="100" height="18">
+                <Text align="CENTER">
+                    <Font family="saira_condensed_medium" size="14"
+                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                        <![CDATA[TEMP]]>
+                    </Font>
+                </Text>
+            </PartText>
+            <Condition>
+                <Expressions>
+                    <Expression name="has_weather">[WEATHER.IS_AVAILABLE]</Expression>
+                </Expressions>
+                <Compare expression="has_weather">
+                    <PartText name="temp_value" x="190" y="267" width="100" height="28">
+                        <Text align="CENTER">
+                            <Font family="dseg7_bold" size="22" color="#ffffffff">
+                                <Template><![CDATA[%d]]>
+                                    <Parameter expression="[WEATHER.TEMPERATURE]" />
+                                </Template>
+                            </Font>
+                            <Font family="saira_condensed_semibold" size="16"
+                                  color="[CONFIGURATION.theme.2]"><![CDATA[°]]></Font>
+                        </Text>
+                    </PartText>
+                </Compare>
+                <Default>
+                    <PartText name="temp_missing" x="190" y="267" width="100" height="28">
+                        <Text align="CENTER">
+                            <Font family="dseg7_bold" size="22" color="#ff3c4452">
+                                <![CDATA[--]]>
+                            </Font>
+                        </Text>
+                    </PartText>
+                </Default>
+            </Condition>
+
+            <PartText name="battery_label" x="298" y="256" width="100" height="18">
+                <Text align="CENTER">
+                    <Font family="saira_condensed_medium" size="14"
+                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                        <![CDATA[BATERIA]]>
+                    </Font>
+                </Text>
+            </PartText>
+            <Condition>
+                <Expressions>
+                    <Expression name="battery_low">[BATTERY_PERCENT] &lt; 15</Expression>
+                </Expressions>
+                <Compare expression="battery_low">
+                    <PartText name="battery_value_low" x="298" y="267" width="100" height="28">
+                        <Text align="CENTER">
+                            <Font family="dseg7_bold" size="22" color="#ffff3b30">
+                                <Template><![CDATA[%d]]>
+                                    <Parameter expression="[BATTERY_PERCENT]" />
+                                </Template>
+                            </Font>
+                            <Font family="saira_condensed_semibold" size="16"
+                                  color="#ffff3b30"><![CDATA[%]]></Font>
+                        </Text>
+                    </PartText>
+                </Compare>
+                <Default>
+                    <PartText name="battery_value" x="298" y="267" width="100" height="28">
+                        <Text align="CENTER">
+                            <Font family="dseg7_bold" size="22" color="#ffffffff">
+                                <Template><![CDATA[%d]]>
+                                    <Parameter expression="[BATTERY_PERCENT]" />
+                                </Template>
+                            </Font>
+                            <Font family="saira_condensed_semibold" size="16"
+                                  color="[CONFIGURATION.theme.2]"><![CDATA[%]]></Font>
+                        </Text>
+                    </PartText>
+                </Default>
+            </Condition>
+        </Group>
+
+        <!-- ======================== 24-hour clock ========================
+             The unlit segment field behind the digits is what makes it read
+             as a real seven-segment display; it stays on in ambient.      -->
+        <PartText name="time_ghost" x="60" y="304" width="360" height="88" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="200" />
+            <Text align="CENTER">
+                <Font family="dseg7_bold" size="78" color="#1affffff">
+                    <![CDATA[88:88]]>
+                </Font>
+            </Text>
+        </PartText>
+
+        <PartText name="time" x="60" y="304" width="360" height="88" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="215" />
+            <Text align="CENTER">
+                <Font family="dseg7_bold" size="78" color="[CONFIGURATION.theme.1]">
+                    <Template><![CDATA[%s:%s]]>
+                        <Parameter expression="[HOUR_0_23_Z]" />
+                        <Parameter expression="[MINUTE_Z]" />
+                    </Template>
+                </Font>
+            </Text>
+        </PartText>
+
+    </Scene>
+</WatchFace>

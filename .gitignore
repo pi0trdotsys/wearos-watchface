@@ -1,0 +1,12 @@
+.gradle/
+build/
+local.properties
+.idea/
+.DS_Store
+tools/__pycache__/
+
+# Downloaded from github.com/google/watchface releases - fetched on demand,
+# see README "Weryfikacja". Not project code, kept out of the repo.
+tools/wff/*.jar
+tools/wff/wff-xsd.zip
+tools/wff/xsd/

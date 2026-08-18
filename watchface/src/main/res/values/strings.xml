@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Nine Eleven</string>
+
+    <!-- Shown in the watch face editor -->
+    <string name="slot_energy">Energy score</string>
+    <string name="cfg_theme">Kolor</string>
+    <string name="cfg_car">Samochód</string>
+
+    <string name="theme_lava">Lawa</string>
+    <string name="theme_guards">Czerwony</string>
+    <string name="theme_amber">Bursztyn</string>
+    <string name="theme_acid">Kwas</string>
+    <string name="theme_ice">Lód</string>
+    <string name="theme_magenta">Magenta</string>
+    <string name="theme_mint">Mięta</string>
+    <string name="theme_mono">Biel</string>
+
+    <string name="car_rear_engine">Coupé z silnikiem z tyłu</string>
+    <string name="car_wedge">Klinowe GT</string>
+    <string name="car_mid_engine">Centralny silnik</string>
+    <string name="car_front_gt">GT z długą maską</string>
+    <string name="car_hyper">Hipersamochód</string>
+    <string name="car_classic">Klasyk lat 60.</string>
+</resources>
