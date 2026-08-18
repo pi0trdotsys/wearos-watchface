@@ -8,8 +8,8 @@
     <string name="cfg_theme">Kolor</string>
     <string name="cfg_car">Samochód</string>
 
-    <string name="theme_lava">Lawa</string>
-    <string name="theme_guards">Czerwony</string>
+    <string name="theme_ember">Ember</string>
+    <string name="theme_crimson">Crimson</string>
     <string name="theme_amber">Bursztyn</string>
     <string name="theme_acid">Kwas</string>
     <string name="theme_ice">Lód</string>
@@ -17,10 +17,13 @@
     <string name="theme_mint">Mięta</string>
     <string name="theme_mono">Biel</string>
 
-    <string name="car_rear_engine">Coupé z silnikiem z tyłu</string>
-    <string name="car_wedge">Klinowe GT</string>
-    <string name="car_mid_engine">Centralny silnik</string>
-    <string name="car_front_gt">GT z długą maską</string>
-    <string name="car_hyper">Hipersamochód</string>
-    <string name="car_classic">Klasyk lat 60.</string>
+    <!-- Descriptive only - never rendered on the watch face itself. -->
+    <string name="car_porsche_911">Porsche 911</string>
+    <string name="car_cybertruck">Tesla Cybertruck</string>
+    <string name="car_challenger">Dodge Challenger</string>
+    <string name="car_mustang">Ford Mustang</string>
+    <string name="car_continental_gt">Bentley Continental GT</string>
+    <string name="car_mini">Mini Cooper</string>
+    <string name="car_chiron">Bugatti Chiron</string>
+    <string name="car_g_wagen">Mercedes G-Klasa</string>
 </resources>

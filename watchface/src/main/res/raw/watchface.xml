@@ -2,27 +2,30 @@
 <!--
   Nine Eleven - Watch Face Format v2 document.
 
-  Design space is 480x480, the native panel of the Galaxy Watch Ultra; the
-  runtime scales it for smaller round watches.
+  Visual language ported from the approved TypeScript mockups
+  (wear-os-car-mockups): near-black ground, one ember accent used
+  sparingly, hairline dividers, tiny wide-tracked uppercase mono labels.
+  All pixel positions below are lifted directly from that mockup's
+  WatchFace.tsx (already authored in this same 480x480 space) and from
+  tools/gen_art.py's render_preview(), which mirrors it - so the shipped
+  face and the generated preview image stay in lockstep.
 
   Layout, top to bottom:
-      y  44 ..  71   date badge
-      y  74 .. 108   energy score (complication slot)
-      y 134 .. 240   car silhouette (six selectable bodies, tinted)
-      y 256 .. 291   steps | temperature | battery
-      y 304 .. 382   24-hour clock, seven-segment
-
-  Positions dodge the bezel numerals baked into bezel.png: the 10 and 50 marks
-  sit at y=137, the 20 and 40 marks at x=62 and x=417.
+      y  62 .. 120   energy score (complication slot)
+      y 150 .. 270   car silhouette (8 selectable bodies, tinted)
+      y 266          hairline divider
+      y 282 .. 322   KROKI | TEMP | BATERIA
+      y 334 .. 422   24-hour clock, seven-segment (the one exception to
+                     the mockup's Saira Condensed numerals, kept by request)
 
   Two user configurations:
-      theme  ->  [CONFIGURATION.theme.0] accent   (car, badge, energy)
-                 [CONFIGURATION.theme.1] clock
-                 [CONFIGURATION.theme.2] labels
-      car    ->  which silhouette is drawn
+      theme  ->  [CONFIGURATION.theme.0] the single accent color
+      car    ->  which of the 8 silhouettes is drawn
 
-  Ambient keeps only what a dark panel can hold cheaply: a wireframe car, the
-  date badge as an outline, and the clock over a faint "88:88" segment field.
+  Ambient keeps only what a dark panel can hold cheaply: the tick ring's
+  major marks, an outline car, the energy value with no segment bar, the
+  clock over a dimmed "88:88" segment field, and a small battery read-out
+  - exactly WatchFace.tsx's `ambient` branch.
 -->
 <WatchFace width="480" height="480" clipShape="CIRCLE">
 
@@ -30,28 +33,30 @@
     <Metadata key="PREVIEW_TIME" value="21:47:00" />
 
     <UserConfigurations>
-        <ColorConfiguration id="theme" displayName="cfg_theme" defaultValue="lava">
-            <ColorOption id="lava"    displayName="theme_lava"    colors="#ff5a1f #ffffff #8c96a8" />
-            <ColorOption id="guards"  displayName="theme_guards"  colors="#e2211c #ffffff #8c96a8" />
-            <ColorOption id="amber"   displayName="theme_amber"   colors="#ffb000 #ffffff #8c96a8" />
-            <ColorOption id="acid"    displayName="theme_acid"    colors="#b4ff39 #ffffff #8c96a8" />
-            <ColorOption id="ice"     displayName="theme_ice"     colors="#4fd1ff #ffffff #8c96a8" />
-            <ColorOption id="magenta" displayName="theme_magenta" colors="#ff3d8b #ffffff #8c96a8" />
-            <ColorOption id="mint"    displayName="theme_mint"    colors="#2be8b0 #2be8b0 #7d8c9c" />
-            <ColorOption id="mono"    displayName="theme_mono"    colors="#e8ecf4 #ffffff #78829a" />
+        <ColorConfiguration id="theme" displayName="cfg_theme" defaultValue="ember">
+            <ColorOption id="ember"   displayName="theme_ember"   colors="#fb6d27" />
+            <ColorOption id="crimson" displayName="theme_crimson" colors="#e2211c" />
+            <ColorOption id="amber"   displayName="theme_amber"   colors="#ffb000" />
+            <ColorOption id="acid"    displayName="theme_acid"    colors="#b4ff39" />
+            <ColorOption id="ice"     displayName="theme_ice"     colors="#4fd1ff" />
+            <ColorOption id="magenta" displayName="theme_magenta" colors="#ff3d8b" />
+            <ColorOption id="mint"    displayName="theme_mint"    colors="#2be8b0" />
+            <ColorOption id="mono"    displayName="theme_mono"    colors="#e8ecf4" />
         </ColorConfiguration>
 
-        <ListConfiguration id="car" displayName="cfg_car" defaultValue="rear_engine">
-            <ListOption id="rear_engine" displayName="car_rear_engine" />
-            <ListOption id="wedge"       displayName="car_wedge" />
-            <ListOption id="mid_engine"  displayName="car_mid_engine" />
-            <ListOption id="front_gt"    displayName="car_front_gt" />
-            <ListOption id="hyper"       displayName="car_hyper" />
-            <ListOption id="classic"     displayName="car_classic" />
+        <ListConfiguration id="car" displayName="cfg_car" defaultValue="porsche_911">
+            <ListOption id="porsche_911"     displayName="car_porsche_911" />
+            <ListOption id="cybertruck"      displayName="car_cybertruck" />
+            <ListOption id="challenger"      displayName="car_challenger" />
+            <ListOption id="mustang"         displayName="car_mustang" />
+            <ListOption id="continental_gt"  displayName="car_continental_gt" />
+            <ListOption id="mini"            displayName="car_mini" />
+            <ListOption id="chiron"          displayName="car_chiron" />
+            <ListOption id="g_wagen"         displayName="car_g_wagen" />
         </ListConfiguration>
     </UserConfigurations>
 
-    <Scene backgroundColor="#ff000000">
+    <Scene backgroundColor="#ff08090f">
 
         <!-- ============================ background ======================= -->
         <PartImage name="backdrop" x="0" y="0" width="480" height="480" alpha="255">
@@ -59,73 +64,72 @@
             <Image resource="backdrop" />
         </PartImage>
 
-        <PartImage name="bezel" x="0" y="0" width="480" height="480" alpha="255">
+        <PartImage name="tick_ring" x="0" y="0" width="480" height="480" alpha="255">
             <Variant mode="AMBIENT" target="alpha" value="0" />
-            <Image resource="bezel" />
+            <Image resource="tick_ring" />
         </PartImage>
 
-        <!-- =========================== date badge ======================== -->
-        <PartDraw name="badge" x="219" y="44" width="42" height="27" alpha="255">
+        <PartImage name="tick_ring_aod" x="0" y="0" width="480" height="480" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Image resource="tick_ring_aod" />
+        </PartImage>
+
+        <!-- Minute-progress sweep - the one live element on the ring. -->
+        <PartDraw name="sweep" x="0" y="0" width="480" height="480" alpha="230">
             <Variant mode="AMBIENT" target="alpha" value="0" />
-            <RoundRectangle x="0" y="0" width="42" height="27"
-                            cornerRadiusX="6" cornerRadiusY="6">
-                <Fill color="[CONFIGURATION.theme.0]" />
-            </RoundRectangle>
+            <Arc centerX="240" centerY="240" width="462" height="462"
+                 startAngle="0" endAngle="0" direction="CLOCKWISE">
+                <Transform target="endAngle"
+                           value="([MINUTE] + [SECOND] / 60) * 6" />
+                <Stroke color="[CONFIGURATION.theme.0]" thickness="2" cap="ROUND" />
+            </Arc>
         </PartDraw>
-
-        <PartDraw name="badge_ambient" x="219" y="44" width="42" height="27" alpha="0">
-            <Variant mode="AMBIENT" target="alpha" value="180" />
-            <RoundRectangle x="1" y="1" width="40" height="25"
-                            cornerRadiusX="6" cornerRadiusY="6">
-                <Stroke color="[CONFIGURATION.theme.0]" thickness="2" />
-            </RoundRectangle>
-        </PartDraw>
-
-        <PartText name="day" x="219" y="45" width="42" height="27" alpha="255">
-            <Variant mode="AMBIENT" target="alpha" value="0" />
-            <Text align="CENTER">
-                <Font family="saira_condensed_bold" size="20" color="#ff08090e">
-                    <Template><![CDATA[%d]]><Parameter expression="[DAY]" /></Template>
-                </Font>
-            </Text>
-        </PartText>
-
-        <PartText name="day_ambient" x="219" y="45" width="42" height="27" alpha="0">
-            <Variant mode="AMBIENT" target="alpha" value="190" />
-            <Text align="CENTER">
-                <Font family="saira_condensed_bold" size="20"
-                      color="[CONFIGURATION.theme.0]">
-                    <Template><![CDATA[%d]]><Parameter expression="[DAY]" /></Template>
-                </Font>
-            </Text>
-        </PartText>
 
         <!-- ======================= energy score =========================
              Watch Face Format has no system source for Samsung Health's
-             Energy score - the health sources are steps and heart rate only -
-             so this is a complication slot the user points at Samsung Health
-             once, in the watch face editor. Every value shape it can arrive
-             in is handled, so the line reads correctly with any provider.  -->
+             Energy score - the health sources are steps and heart rate only
+             - and Samsung Health itself registers no complication provider
+             for it either (checked directly against a Galaxy Watch Ultra:
+             `dumpsys package com.samsung.android.wear.shealth` lists
+             providers for steps, SpO2, sleep, stress, heart rate, exercise -
+             never energy score).
+
+             `energy-bridge-watch` is a small companion provider app that
+             fills that gap: `energy-bridge-companion` (phone) reads the
+             score and pushes it over the Data Layer to
+             `EnergyScoreComplicationService` (watch), which serves it as a
+             SHORT_TEXT complication. DefaultProviderPolicy pre-selects it,
+             so the score appears without the wearer configuring anything -
+             assuming both bridge apps are installed; if not, the slot falls
+             back to EMPTY and can still be pointed at any other provider by
+             hand, same as before. Every value shape a provider can send is
+             handled, not just SHORT_TEXT, and the 16-chip bar only appears
+             for the numeric types, where a fill fraction exists to compute. -->
         <ComplicationSlot name="energy" slotId="1"
-                          x="112" y="74" width="230" height="34"
+                          x="120" y="60" width="240" height="62"
                           displayName="slot_energy"
                           supportedTypes="SHORT_TEXT RANGED_VALUE GOAL_PROGRESS EMPTY"
                           alpha="255">
-            <BoundingBox x="0" y="0" width="230" height="34" />
-            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY"
+                primaryProvider="dev.rosinski.watchface.energybridge/.EnergyScoreComplicationService"
+                primaryProviderType="SHORT_TEXT" />
+            <BoundingBox x="0" y="0" width="240" height="62" />
+            <Variant mode="AMBIENT" target="alpha" value="204" />
 
             <Complication type="SHORT_TEXT">
-                <PartText x="0" y="6" width="116" height="22">
-                    <Text align="END">
-                        <Font family="saira_condensed_medium" size="14"
-                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                <PartText x="0" y="0" width="240" height="18">
+                    <Text align="CENTER">
+                        <Font family="ibm_plex_mono_medium" size="10"
+                              color="#ff8e929a" letterSpacing="0.2">
                             <![CDATA[ENERGIA]]>
                         </Font>
                     </Text>
                 </PartText>
-                <PartText x="128" y="0" width="102" height="34">
-                    <Text align="START">
-                        <Font family="dseg7_bold" size="27"
+                <PartText x="0" y="20" width="240" height="34">
+                    <Text align="CENTER">
+                        <Font family="saira_condensed_regular" size="30"
                               color="[CONFIGURATION.theme.0]">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
@@ -136,17 +140,17 @@
             </Complication>
 
             <Complication type="RANGED_VALUE">
-                <PartText x="0" y="6" width="116" height="22">
-                    <Text align="END">
-                        <Font family="saira_condensed_medium" size="14"
-                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                <PartText x="0" y="0" width="240" height="18">
+                    <Text align="CENTER">
+                        <Font family="ibm_plex_mono_medium" size="10"
+                              color="#ff8e929a" letterSpacing="0.2">
                             <![CDATA[ENERGIA]]>
                         </Font>
                     </Text>
                 </PartText>
-                <PartText x="128" y="0" width="102" height="34">
-                    <Text align="START">
-                        <Font family="dseg7_bold" size="27"
+                <PartText x="0" y="20" width="240" height="34">
+                    <Text align="CENTER">
+                        <Font family="saira_condensed_regular" size="30"
                               color="[CONFIGURATION.theme.0]">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
@@ -154,20 +158,35 @@
                         </Font>
                     </Text>
                 </PartText>
+                <Group name="energy_bar_ranged" x="66" y="54" width="108" height="8" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <PartImage x="0" y="0" width="108" height="8" alpha="90">
+                        <Image resource="energy_gap_mask" />
+                    </PartImage>
+                    <Group name="energy_fill_ranged" x="0" y="0" width="108" height="8"
+                           pivotX="0" pivotY="0.5" scaleX="1">
+                        <Transform target="scaleX"
+                                   value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN] + 0.0001), 0, 1)" />
+                        <PartImage x="0" y="0" width="108" height="8"
+                                   tintColor="[CONFIGURATION.theme.0]">
+                            <Image resource="energy_gap_mask" />
+                        </PartImage>
+                    </Group>
+                </Group>
             </Complication>
 
             <Complication type="GOAL_PROGRESS">
-                <PartText x="0" y="6" width="116" height="22">
-                    <Text align="END">
-                        <Font family="saira_condensed_medium" size="14"
-                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                <PartText x="0" y="0" width="240" height="18">
+                    <Text align="CENTER">
+                        <Font family="ibm_plex_mono_medium" size="10"
+                              color="#ff8e929a" letterSpacing="0.2">
                             <![CDATA[ENERGIA]]>
                         </Font>
                     </Text>
                 </PartText>
-                <PartText x="128" y="0" width="102" height="34">
-                    <Text align="START">
-                        <Font family="dseg7_bold" size="27"
+                <PartText x="0" y="20" width="240" height="34">
+                    <Text align="CENTER">
+                        <Font family="saira_condensed_regular" size="30"
                               color="[CONFIGURATION.theme.0]">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
@@ -175,20 +194,35 @@
                         </Font>
                     </Text>
                 </PartText>
+                <Group name="energy_bar_goal" x="66" y="54" width="108" height="8" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <PartImage x="0" y="0" width="108" height="8" alpha="90">
+                        <Image resource="energy_gap_mask" />
+                    </PartImage>
+                    <Group name="energy_fill_goal" x="0" y="0" width="108" height="8"
+                           pivotX="0" pivotY="0.5" scaleX="1">
+                        <Transform target="scaleX"
+                                   value="clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / ([COMPLICATION.GOAL_PROGRESS_TARGET_VALUE] + 0.0001), 0, 1)" />
+                        <PartImage x="0" y="0" width="108" height="8"
+                                   tintColor="[CONFIGURATION.theme.0]">
+                            <Image resource="energy_gap_mask" />
+                        </PartImage>
+                    </Group>
+                </Group>
             </Complication>
 
             <Complication type="EMPTY">
-                <PartText x="0" y="6" width="116" height="22">
-                    <Text align="END">
-                        <Font family="saira_condensed_medium" size="14"
-                              color="[CONFIGURATION.theme.2]" letterSpacing="0.11">
+                <PartText x="0" y="0" width="240" height="18">
+                    <Text align="CENTER">
+                        <Font family="ibm_plex_mono_medium" size="10"
+                              color="#ff8e929a" letterSpacing="0.2">
                             <![CDATA[ENERGIA]]>
                         </Font>
                     </Text>
                 </PartText>
-                <PartText x="128" y="0" width="102" height="34">
-                    <Text align="START">
-                        <Font family="dseg7_bold" size="27" color="#ff3c4452">
+                <PartText x="0" y="20" width="240" height="34">
+                    <Text align="CENTER">
+                        <Font family="saira_condensed_regular" size="30" color="#ff3c4452">
                             <![CDATA[--]]>
                         </Font>
                     </Text>
@@ -196,37 +230,35 @@
             </Complication>
         </ComplicationSlot>
 
-        <!-- =========================== temperature =======================
+        <!-- =========================== temperature ========================
              Not a raw [WEATHER.*] read: that depends on the phone/watch
-             weather setup (and, on this device, the Weather app's own
-             location permission) with no way for the user to fix it from the
-             watch face - a fixed source is also not tappable in the editor,
-             which is the "nic nie da się wybrać" report. As a complication
-             slot it is configurable exactly like Energy, and on a Galaxy
-             Watch it resolves to Samsung's own Weather app, which exposes
-             SHORT_TEXT/LONG_TEXT providers for temperature, feels-like, UV
-             index and precipitation - whichever the user picks renders here.
-        -->
+             weather setup, with no way for the user to fix it from the
+             watch face - a fixed source is also not tappable in the
+             editor. As a complication slot it is configurable exactly
+             like Energy. DefaultProviderPolicy pre-selects Samsung's own
+             Weather app - confirmed present on the Galaxy Watch Ultra via
+             `dumpsys package com.samsung.android.watch.weather`, which
+             registers WeatherComplicationService as SHORT_TEXT/LONG_TEXT,
+             plus separate feels-like/UV/precipitation providers - so the
+             wearer gets a working value immediately and can still swap to
+             any of those from the editor.                                -->
         <ComplicationSlot name="temp" slotId="2"
-                          x="190" y="267" width="100" height="28"
+                          x="194" y="298" width="94" height="26"
                           displayName="slot_temp"
                           supportedTypes="SHORT_TEXT LONG_TEXT RANGED_VALUE EMPTY"
                           alpha="255">
-            <!-- Galaxy Watch Ultra / One UI 8: Samsung Weather exposes this
-                 provider as SHORT_TEXT or LONG_TEXT. The slot remains editable
-                 so the wearer can select Feels like / UV / another provider. -->
             <DefaultProviderPolicy
                 defaultSystemProvider="EMPTY"
                 defaultSystemProviderType="EMPTY"
                 primaryProvider="com.samsung.android.watch.weather/.complication.WeatherComplicationService"
                 primaryProviderType="SHORT_TEXT" />
-            <BoundingBox x="0" y="0" width="100" height="28" />
+            <BoundingBox x="0" y="0" width="94" height="26" />
             <Variant mode="AMBIENT" target="alpha" value="0" />
 
             <Complication type="SHORT_TEXT">
-                <PartText x="0" y="0" width="100" height="28">
+                <PartText x="0" y="0" width="94" height="26">
                     <Text align="CENTER">
-                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                        <Font family="saira_condensed_regular" size="26" color="#fff4f5f8">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
                             </Template>
@@ -234,11 +266,10 @@
                     </Text>
                 </PartText>
             </Complication>
-
             <Complication type="LONG_TEXT">
-                <PartText x="0" y="0" width="100" height="28">
+                <PartText x="0" y="0" width="94" height="26">
                     <Text align="CENTER">
-                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                        <Font family="saira_condensed_regular" size="26" color="#fff4f5f8">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
                             </Template>
@@ -246,11 +277,10 @@
                     </Text>
                 </PartText>
             </Complication>
-
             <Complication type="RANGED_VALUE">
-                <PartText x="0" y="0" width="100" height="28">
+                <PartText x="0" y="0" width="94" height="26">
                     <Text align="CENTER">
-                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                        <Font family="saira_condensed_regular" size="26" color="#fff4f5f8">
                             <Template><![CDATA[%s]]>
                                 <Parameter expression="[COMPLICATION.TEXT]" />
                             </Template>
@@ -258,11 +288,10 @@
                     </Text>
                 </PartText>
             </Complication>
-
             <Complication type="EMPTY">
-                <PartText x="0" y="0" width="100" height="28">
+                <PartText x="0" y="0" width="94" height="26">
                     <Text align="CENTER">
-                        <Font family="dseg7_bold" size="22" color="#ff3c4452">
+                        <Font family="saira_condensed_regular" size="26" color="#ff3c4452">
                             <![CDATA[--]]>
                         </Font>
                     </Text>
@@ -271,95 +300,125 @@
         </ComplicationSlot>
 
         <!-- ============================== car ============================
-             One flat white silhouette per body, tinted with the theme accent,
-             plus a wireframe twin that takes over in ambient.               -->
+             One flat white silhouette per body, tinted with the theme
+             accent, plus a wireframe twin that takes over in ambient.     -->
         <ListConfiguration id="car">
-            <ListOption id="rear_engine">
-                <Group name="car_rear_engine" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="porsche_911">
+                <Group name="car_porsche_911" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_rear_engine" />
+                        <Image resource="car_porsche_911" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_rear_engine_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_porsche_911_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
 
-            <ListOption id="wedge">
-                <Group name="car_wedge" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="cybertruck">
+                <Group name="car_cybertruck" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_wedge" />
+                        <Image resource="car_cybertruck" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_wedge_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_cybertruck_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
 
-            <ListOption id="mid_engine">
-                <Group name="car_mid_engine" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="challenger">
+                <Group name="car_challenger" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_mid_engine" />
+                        <Image resource="car_challenger" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_mid_engine_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_challenger_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
 
-            <ListOption id="front_gt">
-                <Group name="car_front_gt" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="mustang">
+                <Group name="car_mustang" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_front_gt" />
+                        <Image resource="car_mustang" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_front_gt_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_mustang_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
 
-            <ListOption id="hyper">
-                <Group name="car_hyper" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="continental_gt">
+                <Group name="car_continental_gt" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_hyper" />
+                        <Image resource="car_continental_gt" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_hyper_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_continental_gt_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
 
-            <ListOption id="classic">
-                <Group name="car_classic" x="54" y="134" width="372" height="106">
-                    <PartImage x="0" y="0" width="372" height="106" alpha="255"
+            <ListOption id="mini">
+                <Group name="car_mini" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
                                tintColor="[CONFIGURATION.theme.0]">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Image resource="car_classic" />
+                        <Image resource="car_mini" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="372" height="106" alpha="0"
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
                                tintColor="[CONFIGURATION.theme.0]">
-                        <Variant mode="AMBIENT" target="alpha" value="190" />
-                        <Image resource="car_classic_aod" />
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_mini_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="chiron">
+                <Group name="car_chiron" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_chiron" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_chiron_aod" />
+                    </PartImage>
+                </Group>
+            </ListOption>
+
+            <ListOption id="g_wagen">
+                <Group name="car_g_wagen" x="80" y="150" width="320" height="120">
+                    <PartImage x="0" y="0" width="320" height="120" alpha="255"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Image resource="car_g_wagen" />
+                    </PartImage>
+                    <PartImage x="0" y="0" width="320" height="120" alpha="0"
+                               tintColor="[CONFIGURATION.theme.0]">
+                        <Variant mode="AMBIENT" target="alpha" value="255" />
+                        <Image resource="car_g_wagen_aod" />
                     </PartImage>
                 </Group>
             </ListOption>
@@ -369,17 +428,29 @@
         <Group name="metrics" x="0" y="0" width="480" height="480" alpha="255">
             <Variant mode="AMBIENT" target="alpha" value="0" />
 
-            <PartText name="steps_label" x="82" y="256" width="100" height="18">
+            <PartDraw name="metric_hairlines" x="0" y="0" width="480" height="480">
+                <Rectangle x="96" y="266" width="288" height="1">
+                    <Fill color="#29ffffff" />
+                </Rectangle>
+                <Rectangle x="192" y="282" width="1" height="40">
+                    <Fill color="#14ffffff" />
+                </Rectangle>
+                <Rectangle x="288" y="282" width="1" height="40">
+                    <Fill color="#14ffffff" />
+                </Rectangle>
+            </PartDraw>
+
+            <PartText name="steps_label" x="98" y="282" width="94" height="16">
                 <Text align="CENTER">
-                    <Font family="saira_condensed_medium" size="14"
-                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                    <Font family="ibm_plex_mono_medium" size="10"
+                          color="#ff8e929a" letterSpacing="0.3">
                         <![CDATA[KROKI]]>
                     </Font>
                 </Text>
             </PartText>
-            <PartText name="steps_value" x="82" y="267" width="100" height="28">
+            <PartText name="steps_value" x="98" y="298" width="94" height="26">
                 <Text align="CENTER">
-                    <Font family="dseg7_bold" size="22" color="#ffffffff">
+                    <Font family="saira_condensed_regular" size="26" color="#fff4f5f8">
                         <Template><![CDATA[%d]]>
                             <Parameter expression="[STEP_COUNT]" />
                         </Template>
@@ -387,50 +458,51 @@
                 </Text>
             </PartText>
 
-            <PartText name="temp_label" x="190" y="256" width="100" height="18">
+            <PartText name="temp_label" x="194" y="282" width="94" height="16">
                 <Text align="CENTER">
-                    <Font family="saira_condensed_medium" size="14"
-                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                    <Font family="ibm_plex_mono_medium" size="10"
+                          color="#ff8e929a" letterSpacing="0.3">
                         <![CDATA[TEMP]]>
                     </Font>
                 </Text>
             </PartText>
 
-            <PartText name="battery_label" x="298" y="256" width="100" height="18">
+
+            <PartText name="battery_label" x="290" y="282" width="94" height="16">
                 <Text align="CENTER">
-                    <Font family="saira_condensed_medium" size="14"
-                          color="[CONFIGURATION.theme.2]" letterSpacing="0.1">
+                    <Font family="ibm_plex_mono_medium" size="10"
+                          color="#ff8e929a" letterSpacing="0.3">
                         <![CDATA[BATERIA]]>
                     </Font>
                 </Text>
             </PartText>
+
+            <!-- Always accent-colored (WatchFace.tsx marks battery as the
+                 one highlighted metric); overridden to red under 15%. -->
             <Condition>
                 <Expressions>
                     <Expression name="battery_low">[BATTERY_PERCENT] &lt; 15</Expression>
                 </Expressions>
                 <Compare expression="battery_low">
-                    <PartText name="battery_value_low" x="298" y="267" width="100" height="28">
+                    <PartText name="battery_value_low" x="290" y="298" width="94" height="26">
                         <Text align="CENTER">
-                            <Font family="dseg7_bold" size="22" color="#ffff3b30">
+                            <Font family="saira_condensed_regular" size="26" color="#ffff3b30">
                                 <Template><![CDATA[%d]]>
                                     <Parameter expression="[BATTERY_PERCENT]" />
                                 </Template>
                             </Font>
-                            <Font family="saira_condensed_semibold" size="16"
-                                  color="#ffff3b30"><![CDATA[%]]></Font>
                         </Text>
                     </PartText>
                 </Compare>
                 <Default>
-                    <PartText name="battery_value" x="298" y="267" width="100" height="28">
+                    <PartText name="battery_value" x="290" y="298" width="94" height="26">
                         <Text align="CENTER">
-                            <Font family="dseg7_bold" size="22" color="#ffffffff">
+                            <Font family="saira_condensed_regular" size="26"
+                                  color="[CONFIGURATION.theme.0]">
                                 <Template><![CDATA[%d]]>
                                     <Parameter expression="[BATTERY_PERCENT]" />
                                 </Template>
                             </Font>
-                            <Font family="saira_condensed_semibold" size="16"
-                                  color="[CONFIGURATION.theme.2]"><![CDATA[%]]></Font>
                         </Text>
                     </PartText>
                 </Default>
@@ -438,10 +510,12 @@
         </Group>
 
         <!-- ======================== 24-hour clock ========================
-             The unlit segment field behind the digits is what makes it read
-             as a real seven-segment display; it stays on in ambient.      -->
-        <PartText name="time_ghost" x="60" y="304" width="360" height="88" alpha="255">
-            <Variant mode="AMBIENT" target="alpha" value="200" />
+             The one place the mockup's Saira Condensed numerals were traded
+             for the seven-segment face, by request. The unlit segment field
+             behind the digits is what sells it as a real display; it stays
+             on in ambient.                                                -->
+        <PartText name="time_ghost" x="60" y="334" width="360" height="92" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="203" />
             <Text align="CENTER">
                 <Font family="dseg7_bold" size="78" color="#1affffff">
                     <![CDATA[88:88]]>
@@ -449,13 +523,26 @@
             </Text>
         </PartText>
 
-        <PartText name="time" x="60" y="304" width="360" height="88" alpha="255">
-            <Variant mode="AMBIENT" target="alpha" value="215" />
+        <PartText name="time" x="60" y="334" width="360" height="92" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="235" />
             <Text align="CENTER">
-                <Font family="dseg7_bold" size="78" color="[CONFIGURATION.theme.1]">
+                <Font family="dseg7_bold" size="78" color="#fff4f5f8">
                     <Template><![CDATA[%s:%s]]>
                         <Parameter expression="[HOUR_0_23_Z]" />
                         <Parameter expression="[MINUTE_Z]" />
+                    </Template>
+                </Font>
+            </Text>
+        </PartText>
+
+        <!-- Ambient-only battery readout, standing in for the row above. -->
+        <PartText name="battery_ambient" x="0" y="414" width="480" height="16" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="255" />
+            <Text align="CENTER">
+                <Font family="ibm_plex_mono_medium" size="10"
+                      color="#ff8e929a" letterSpacing="0.2">
+                    <Template><![CDATA[%d%%]]>
+                        <Parameter expression="[BATTERY_PERCENT]" />
                     </Template>
                 </Font>
             </Text>

@@ -28,13 +28,18 @@
                 android:value="true" />
         </service>
 
+        <!-- No <data> element here: BIND_LISTENER is how Play Services binds
+             this service to deliver onDataChanged for ANY path, system-wide
+             - it is not itself carrying our path, so a <data> filter here
+             stops the binding intent from ever matching and the service
+             never gets bound at all. Path filtering happens where it
+             belongs, in EnergyScoreDataListenerService.onDataChanged(). -->
         <service
             android:name=".EnergyScoreDataListenerService"
             android:directBootAware="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/nine-eleven/energy-score" />
             </intent-filter>
         </service>
     </application>

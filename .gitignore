@@ -12,3 +12,7 @@ tools/wff/wff-xsd.zip
 tools/wff/xsd/
 .tmp/
 energy-bridge-phone/libs/*.aar
+
+# Local launch config for previewing the separate wear-os-car-mockups repo
+# in the Browser pane - machine-specific path, not part of this project.
+.claude/
