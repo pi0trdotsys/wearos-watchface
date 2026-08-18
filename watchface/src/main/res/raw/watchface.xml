@@ -196,6 +196,80 @@
             </Complication>
         </ComplicationSlot>
 
+        <!-- =========================== temperature =======================
+             Not a raw [WEATHER.*] read: that depends on the phone/watch
+             weather setup (and, on this device, the Weather app's own
+             location permission) with no way for the user to fix it from the
+             watch face - a fixed source is also not tappable in the editor,
+             which is the "nic nie da się wybrać" report. As a complication
+             slot it is configurable exactly like Energy, and on a Galaxy
+             Watch it resolves to Samsung's own Weather app, which exposes
+             SHORT_TEXT/LONG_TEXT providers for temperature, feels-like, UV
+             index and precipitation - whichever the user picks renders here.
+        -->
+        <ComplicationSlot name="temp" slotId="2"
+                          x="190" y="267" width="100" height="28"
+                          displayName="slot_temp"
+                          supportedTypes="SHORT_TEXT LONG_TEXT RANGED_VALUE EMPTY"
+                          alpha="255">
+            <!-- Galaxy Watch Ultra / One UI 8: Samsung Weather exposes this
+                 provider as SHORT_TEXT or LONG_TEXT. The slot remains editable
+                 so the wearer can select Feels like / UV / another provider. -->
+            <DefaultProviderPolicy
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY"
+                primaryProvider="com.samsung.android.watch.weather/.complication.WeatherComplicationService"
+                primaryProviderType="SHORT_TEXT" />
+            <BoundingBox x="0" y="0" width="100" height="28" />
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+
+            <Complication type="SHORT_TEXT">
+                <PartText x="0" y="0" width="100" height="28">
+                    <Text align="CENTER">
+                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="LONG_TEXT">
+                <PartText x="0" y="0" width="100" height="28">
+                    <Text align="CENTER">
+                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="RANGED_VALUE">
+                <PartText x="0" y="0" width="100" height="28">
+                    <Text align="CENTER">
+                        <Font family="dseg7_bold" size="22" color="#ffffffff">
+                            <Template><![CDATA[%s]]>
+                                <Parameter expression="[COMPLICATION.TEXT]" />
+                            </Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <PartText x="0" y="0" width="100" height="28">
+                    <Text align="CENTER">
+                        <Font family="dseg7_bold" size="22" color="#ff3c4452">
+                            <![CDATA[--]]>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+        </ComplicationSlot>
+
         <!-- ============================== car ============================
              One flat white silhouette per body, tinted with the theme accent,
              plus a wireframe twin that takes over in ambient.               -->
@@ -321,33 +395,6 @@
                     </Font>
                 </Text>
             </PartText>
-            <Condition>
-                <Expressions>
-                    <Expression name="has_weather">[WEATHER.IS_AVAILABLE]</Expression>
-                </Expressions>
-                <Compare expression="has_weather">
-                    <PartText name="temp_value" x="190" y="267" width="100" height="28">
-                        <Text align="CENTER">
-                            <Font family="dseg7_bold" size="22" color="#ffffffff">
-                                <Template><![CDATA[%d]]>
-                                    <Parameter expression="[WEATHER.TEMPERATURE]" />
-                                </Template>
-                            </Font>
-                            <Font family="saira_condensed_semibold" size="16"
-                                  color="[CONFIGURATION.theme.2]"><![CDATA[°]]></Font>
-                        </Text>
-                    </PartText>
-                </Compare>
-                <Default>
-                    <PartText name="temp_missing" x="190" y="267" width="100" height="28">
-                        <Text align="CENTER">
-                            <Font family="dseg7_bold" size="22" color="#ff3c4452">
-                                <![CDATA[--]]>
-                            </Font>
-                        </Text>
-                    </PartText>
-                </Default>
-            </Condition>
 
             <PartText name="battery_label" x="298" y="256" width="100" height="18">
                 <Text align="CENTER">

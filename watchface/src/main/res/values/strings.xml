@@ -4,6 +4,7 @@
 
     <!-- Shown in the watch face editor -->
     <string name="slot_energy">Energy score</string>
+    <string name="slot_temp">Temperatura</string>
     <string name="cfg_theme">Kolor</string>
     <string name="cfg_car">Samochód</string>
 

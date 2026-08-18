@@ -3,6 +3,10 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+    <!-- Required when a complication slot receives data from an external
+         complication provider, such as the optional Energy Score bridge. -->
+    <uses-permission android:name="com.google.android.wearable.permission.RECEIVE_COMPLICATION_DATA" />
+
     <!-- hasCode MUST be false: Watch Face Format bundles carry resources only. -->
     <application
         android:hasCode="false"

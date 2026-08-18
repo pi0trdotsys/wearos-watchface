@@ -11,7 +11,7 @@ zużycie baterii.
 | Godzina, 24 h, siedmiosegmentowo | `[HOUR_0_23_Z]` : `[MINUTE_Z]` |
 | Data (plakietka) | `[DAY]` |
 | Kroki | `[STEP_COUNT]` |
-| Temperatura | `[WEATHER.TEMPERATURE]`, fallback gdy brak pogody |
+| Temperatura | konfigurowalna komplikacja Samsung Weather |
 | Bateria (czerwona poniżej 15 %) | `[BATTERY_PERCENT]` |
 | **Energy score** | slot komplikacji — patrz niżej |
 | 6 sylwetek aut | `ListConfiguration` |
@@ -27,7 +27,11 @@ Przytrzymaj tarczę → **Dostosuj**:
   energii; motyw *Mięta* koloruje dodatkowo zegar.
 * **Samochód** — 6 nadwozi: coupé z silnikiem z tyłu, klinowe GT, centralny
   silnik, GT z długą maską, hipersamochód, klasyk lat 60.
-* **Energy score** — dotknij linii `ENERGIA` i wybierz dostawcę.
+* **Temperatura** — dotknij pola `TEMP`. Domyślnie jest ustawiona aplikacja
+  Samsung Weather; możesz wybrać temperaturę, temperaturę odczuwalną, UV lub
+  innego dostawcę komplikacji.
+* **Energy score** — dotknij linii `ENERGIA` i wybierz dostawcę, jeśli jest
+  zainstalowany.
 
 Auta to białe sylwetki barwione przez `tintColor`, więc jeden komplet obrazków
 obsługuje wszystkie palety.
@@ -46,9 +50,18 @@ Linia `ENERGIA` to `ComplicationSlot` obsługujący `SHORT_TEXT`, `RANGED_VALUE`
 `GOAL_PROGRESS` i `EMPTY` — niezależnie od postaci wartości renderuje się
 poprawnie. Konfiguracja jednorazowa, w edytorze tarczy.
 
-Jeśli w edytorze nie ma pozycji *Energy score*, znaczy że wersja Samsung Health
-na zegarku nie wystawia jej dostawcom zewnętrznym. Wtedy pole pokazuje `--`
-i można w nie wstawić dowolną inną metrykę.
+Na Galaxy Watch Ultra / One UI 8 Samsung Health nie wystawia Energy Score jako
+systemowego providera komplikacji. Dlatego sama tarcza nie może go odczytać z
+`watchface.xml`, choć slot jest gotowy na `SHORT_TEXT`, `RANGED_VALUE` i
+`GOAL_PROGRESS` oraz ma uprawnienie do odbierania danych od zewnętrznego
+providera.
+
+Aby pokazać prawdziwy Energy Score, potrzebny jest osobny provider komplikacji
+na zegarku i aplikacja towarzysząca na telefonie: telefon czyta
+`DataTypes.ENERGY_SCORE` przez Samsung Health Data SDK po zgodzie użytkownika,
+a następnie synchronizuje wartość na zegarek. Samsung udostępnia to SDK na
+osobnej licencji; lokalne testy wymagają również trybu deweloperskiego Samsung
+Health, a dystrybucja — zatwierdzonego partnerstwa.
 
 ---
 

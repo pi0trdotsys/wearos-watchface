@@ -10,3 +10,5 @@ tools/__pycache__/
 tools/wff/*.jar
 tools/wff/wff-xsd.zip
 tools/wff/xsd/
+.tmp/
+energy-bridge-phone/libs/*.aar
